@@ -1,0 +1,11 @@
+{
+    "name": "console_commands",
+    "author": "spaceman",
+    "version": "1.0.0",
+    "lockfileVersion": 1,
+    "requires": true,
+    "dependencies": {},
+    "license": "NCSA",
+    "main": "main.js"
+}
+  

@@ -1,0 +1,6 @@
+
+.vs/*
+module/.vs/*
+module/bin/*
+module/obj/*
+*.zip
