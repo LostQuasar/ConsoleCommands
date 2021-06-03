@@ -20,3 +20,14 @@ Adds useful console commands to EFT
 | camlookspeed       | \[0-3.40282347E+38\] |            | 3             | Changes the sensitivity of the freecam                                                          |
 | time               | \[0-24\]             |            |               | Changes the time of the raid (Does not effect time left in raid)                                |
 | spaceman           |                      |            |               | An Easter Egg                                                                                   |
+
+
+## Credits
+
+Freecam code from external source:
+
+Original License [Terkoiz-Freecam](Terkoiz-Freecam)
+
+Original Code: [Terkoiz/Freecam](https://dev.sp-tarkov.com/Terkoiz/Freecam)
+
+Original Author: [Terkoiz](https://dev.sp-tarkov.com/Terkoiz)
