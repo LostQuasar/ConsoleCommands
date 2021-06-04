@@ -22,6 +22,13 @@ Adds useful console commands to EFT
 | spaceman           |                      |            |               | An Easter Egg                                                                                   |
 
 
+## How to install
+
+- Download the newest release from the releases page
+- Extract the folder called `spaceman-console_commands` into `user/mods/`
+- Enjoy!
+
+
 ## Credits
 
 Freecam code from external source:
