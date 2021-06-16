@@ -1,4 +1,4 @@
-﻿using Aki.SinglePlayer.Utils;
+﻿using Utils = Aki.SinglePlayer.Utils;
 using UnityEngine;
 using EFT.UI;
 using Newtonsoft.Json;
@@ -8,7 +8,7 @@ using Aki.Common.Utils.Patching;
 using System;
 using Comfort.Common;
 using System.Linq;
-using EFT.Weather;
+using EFT.Interactive;
 using RegexCommand = GClass1954;
 
 namespace Spaceman.ConsoleCommands
@@ -54,7 +54,7 @@ namespace Spaceman.ConsoleCommands
             ConsoleScreen.Commands.AddCommand(new RegexCommand("pmcpercent (100|[0-9][0-9]?)", match =>
             {
                 int chance = int.Parse(match.Groups[1].Value);
-                RequestHandler.PostJson(basePath + "pmcConversionChance", JsonConvert.SerializeObject(chance));
+                Utils.RequestHandler.PostJson(basePath + "pmcConversionChance", JsonConvert.SerializeObject(chance));
 
                 AddConsoleLog($"Set pmc conversion chance to {chance}%");
             }));
@@ -64,7 +64,7 @@ namespace Spaceman.ConsoleCommands
             {
                 try
                 {
-                    RequestHandler.GetJson(basePath + "killServer");
+                    Utils.RequestHandler.GetJson(basePath + "killServer");
                 }
                 catch { }
                 System.Diagnostics.Process.GetCurrentProcess().Kill();
@@ -72,7 +72,7 @@ namespace Spaceman.ConsoleCommands
 
             ConsoleScreen.Commands.AddCommand(new RegexCommand("give (\\S+) (\\d+)", match =>
             {
-                RequestHandler.GetJson(basePath + "give/" + match.Groups[1].Value + "/" + match.Groups[2].Value);
+                Utils.RequestHandler.GetJson(basePath + "give/" + match.Groups[1].Value + "/" + match.Groups[2].Value);
 
                 AddConsoleLog($"Gave {match.Groups[2].Value} {match.Groups[1].Value} to player");
             }));
@@ -82,7 +82,7 @@ namespace Spaceman.ConsoleCommands
             ConsoleScreen.Commands.AddCommand(new RegexCommand("insurancechance (100|[0-9][0-9]?)", match =>
             {
                 int chance = int.Parse(match.Groups[1].Value);
-                RequestHandler.PostJson(basePath + "insuranceReturnChance", JsonConvert.SerializeObject(chance));
+                Utils.RequestHandler.PostJson(basePath + "insuranceReturnChance", JsonConvert.SerializeObject(chance));
 
                 AddConsoleLog($"Set insurance return chance to {chance}%");
             }));
@@ -91,7 +91,7 @@ namespace Spaceman.ConsoleCommands
             ConsoleScreen.Commands.AddCommand(new RegexCommand("bosschance (100|[0-9][0-9]?)", match =>
             {
                 int chance = int.Parse(match.Groups[1].Value);
-                RequestHandler.PostJson(basePath + "bossChance", JsonConvert.SerializeObject(chance));
+                Utils.RequestHandler.PostJson(basePath + "bossChance", JsonConvert.SerializeObject(chance));
 
                 AddConsoleLog($"Set boss chance to {chance}%");
             }));
@@ -100,7 +100,7 @@ namespace Spaceman.ConsoleCommands
             //Kills all ai or the player
             ConsoleScreen.Commands.AddCommand(new RegexCommand("kill (ai|me)", match =>
             {
-                string killGroup = match.Groups[1].Value;
+                string killGroup = match.Groups[1].Value; //ai or me
                 int killCount = 0;
                 List<Player> players = Singleton<GameWorld>.Instance.RegisteredPlayers;
                 foreach (Player player in players.ToList())
@@ -117,7 +117,8 @@ namespace Spaceman.ConsoleCommands
                     }
                 }
 
-                AddConsoleLog($"Killed " + killGroup == "ai" ? $"{killCount} AI" : "Player");
+                string parsedStatus = killGroup == "ai" ? $"{killCount} AI" : "Player";
+                AddConsoleLog("Killed " + parsedStatus);
             }));
 
             //Heal player
@@ -243,6 +244,31 @@ namespace Spaceman.ConsoleCommands
                 {
                     AddConsoleLog("Unable to parse int " + match.Groups[1].Value);
                 }
+            }));
+
+            //Reset the raid timer to the default or max value
+            ConsoleScreen.Commands.AddCommand(new RegexCommand("raidtimer (reset|inf)", match => 
+            {
+                Player player = GetPlayerInstance();
+                int timeRemaining;
+                
+                if (match.Groups[1].Value == "reset")
+                {
+                    timeRemaining = 45 * 60;
+                }
+                else if(match.Groups[1].Value == "inf")
+                {
+                    timeRemaining = int.MaxValue;
+                }
+                else {
+                    AddConsoleLog("Unable to parse argument " + match.Groups[1].Value);
+                    return;
+                }
+
+                ExfiltrationPoint[] extracts = new List<ExfiltrationPoint>().ToArray();
+                Singleton<GameUI>.Instance.TimerPanel.SetTime(GClass818.UtcNow, player.Side, timeRemaining, extracts);
+                string output = match.Groups[1].Value == "reset" ? "Reset the timer" : "Set the raid timer to inf";
+                AddConsoleLog(output);
             }));
 
             //Easter Egg Spaceman
